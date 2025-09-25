@@ -167,4 +167,5 @@ func (g *DataGenerator) writeHeader(headers *common.GeneratedDataHeaders) {
 		g.bufOut.WriteString("\n")
 	}
 	g.bufOut.WriteString("\n")
+	g.bufOut.Flush()
 }
