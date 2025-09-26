@@ -6,12 +6,15 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/blagojts/viper"
 	"github.com/spf13/pflag"
 	"github.com/timescale/tsbs/internal/utils"
 	"github.com/timescale/tsbs/load"
 	"github.com/timescale/tsbs/pkg/data/source"
+	"github.com/timescale/tsbs/pkg/data/usecases/common"
+	"github.com/timescale/tsbs/pkg/targets/constants"
 	"github.com/timescale/tsbs/pkg/targets/timescaledb"
 )
 
@@ -92,9 +95,27 @@ func main() {
 		)
 	}
 
+	//benchmark, err := timescaledb.NewBenchmark(loaderConf.DBName, opts, &source.DataSourceConfig{
+	//	Type: source.FileDataSourceType,
+	//	File: &source.FileDataSourceConfig{Location: loaderConf.FileName},
+	//})
+
 	benchmark, err := timescaledb.NewBenchmark(loaderConf.DBName, opts, &source.DataSourceConfig{
-		Type: source.FileDataSourceType,
-		File: &source.FileDataSourceConfig{Location: loaderConf.FileName},
+		Type: source.SimulatorDataSourceType,
+		Simulator: &common.DataGeneratorConfig{
+			BaseConfig: common.BaseConfig{
+				Seed:      123,
+				Format:    constants.FormatTimescaleDB,
+				Use:       common.UseCaseIoT,
+				TimeStart: "2016-01-01T00:00:00Z",
+				TimeEnd:   "2016-01-04T00:00:00Z",
+				Scale:     10,
+			},
+			LogInterval:          time.Second,
+			InitialScale:         0,
+			InterleavedGroupID:   0,
+			InterleavedNumGroups: 1,
+		},
 	})
 	if err != nil {
 		panic(err)

@@ -176,18 +176,22 @@ func (d *dbCreator) createTableAndIndexes(dbBench *sql.DB, tableName string, fie
 	}
 
 	MustExec(dbBench, fmt.Sprintf("DROP TABLE IF EXISTS %s", tableName))
-	MustExec(dbBench, fmt.Sprintf("CREATE TABLE %s (time timestamptz, tags_id integer, %s, additional_tags JSONB DEFAULT NULL)", tableName, strings.Join(fieldDefs, ",")))
+	sql0 := fmt.Sprintf("CREATE TABLE %s (time timestamptz, tags_id integer, %s, additional_tags JSONB DEFAULT NULL)", tableName, strings.Join(fieldDefs, ","))
+	MustExec(dbBench, sql0)
 	if d.opts.PartitionIndex {
-		MustExec(dbBench, fmt.Sprintf("CREATE INDEX ON %s(%s, \"time\" DESC)", tableName, partitionColumn))
+		sql1 := fmt.Sprintf("CREATE INDEX ON %s(%s, \"time\" DESC)", tableName, partitionColumn)
+		MustExec(dbBench, sql1)
 	}
 
 	// Only allow one or the other, it's probably never right to have both.
 	// Experimentation suggests (so far) that for 100k devices it is better to
 	// use --time-partition-index for reduced index lock contention.
 	if d.opts.TimePartitionIndex {
-		MustExec(dbBench, fmt.Sprintf("CREATE INDEX ON %s(\"time\" DESC, %s)", tableName, partitionColumn))
+		sql2 := fmt.Sprintf("CREATE INDEX ON %s(\"time\" DESC, %s)", tableName, partitionColumn)
+		MustExec(dbBench, sql2)
 	} else if d.opts.TimeIndex {
-		MustExec(dbBench, fmt.Sprintf("CREATE INDEX ON %s(\"time\" DESC)", tableName))
+		sql3 := fmt.Sprintf("CREATE INDEX ON %s(\"time\" DESC)", tableName)
+		MustExec(dbBench, sql3)
 	}
 
 	for _, indexDef := range indexDefs {
@@ -220,10 +224,9 @@ func (d *dbCreator) createTableAndIndexes(dbBench *sql.DB, tableName string, fie
 			// multi-node replication across data nodes
 			partitionsOption = fmt.Sprintf("partitioning_column => '%s'::name, replication_factor => %v::smallint", partitionColumn, d.opts.ReplicationFactor)
 		}
-
-		MustExec(dbBench,
-			fmt.Sprintf("SELECT %s('%s'::regclass, 'time'::name, %s, chunk_time_interval => %d, create_default_indexes=>FALSE)",
-				creationCommand, tableName, partitionsOption, d.opts.ChunkTime.Nanoseconds()/1000))
+		sql4 := fmt.Sprintf("SELECT %s('%s'::regclass, 'time'::name, %s, chunk_time_interval => %d, create_default_indexes=>FALSE)",
+			creationCommand, tableName, partitionsOption, d.opts.ChunkTime.Nanoseconds()/1000)
+		MustExec(dbBench, sql4)
 	}
 }
 
@@ -290,6 +293,7 @@ func extractTagNamesAndTypes(tags []string) ([]string, []string) {
 
 // MustExec executes query or exits on error
 func MustExec(db *sql.DB, query string, args ...interface{}) sql.Result {
+	println("===", query)
 	r, err := db.Exec(query, args...)
 	if err != nil {
 		fmt.Printf("could not execute sql: %s", query)
