@@ -84,7 +84,9 @@ func (p *processor) insertTags(db *sql.DB, tagRows [][]string) map[string]int64 
 	}
 	tx := MustBegin(db)
 	defer tx.Commit()
-	res, err := tx.Query(fmt.Sprintf(insertTagsSQL, strings.Join(cols, ","), strings.Join(values, ",")))
+
+	sql := fmt.Sprintf(insertTagsSQL, strings.Join(cols, ","), strings.Join(values, ","))
+	res, err := tx.Query(sql)
 	if err != nil {
 		panic(err)
 	}
