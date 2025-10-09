@@ -17,8 +17,8 @@ type influxTarget struct {
 }
 
 func (t *influxTarget) TargetSpecificFlags(flagPrefix string, flagSet *pflag.FlagSet) {
-	flagSet.String(flagPrefix+"url", "http://localhost:9000/", "QuestDB REST end point")
-	flagSet.String(flagPrefix+"ilp-bind-to", "127.0.0.1:9009", "QuestDB influx line protocol TCP ip:port")
+	flagSet.String(flagPrefix+"url", "http://localhost:9100/", "QuestDB REST end point")
+	flagSet.String(flagPrefix+"ilp-bind-to", "127.0.0.1:9109", "QuestDB influx line protocol TCP ip:port")
 }
 
 func (t *influxTarget) TargetName() string {
