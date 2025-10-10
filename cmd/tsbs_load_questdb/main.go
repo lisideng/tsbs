@@ -54,6 +54,7 @@ func init() {
 	pflag.CommandLine.Int64("seed", 0, "PRNG seed (default: 0, which uses the current timestamp)")
 	pflag.CommandLine.String("insert-intervals", "", "Time to wait between each insert, default '' => all workers insert ASAP. '1,2' = worker 1 waits 1s between inserts, worker 2 and others wait 2s")
 	pflag.CommandLine.Bool("hash-workers", false, "Whether to consistently hash insert data to the same workers (i.e., the data for a particular host always goes to the same worker)")
+	pflag.CommandLine.Bool("no-flow-control", true, "no-flow-control")
 	target.TargetSpecificFlags("", pflag.CommandLine)
 	pflag.Parse()
 
