@@ -91,7 +91,8 @@ func init() {
 type benchmark struct{}
 
 func (b *benchmark) GetDataSource() targets.DataSource {
-	return &fileDataSource{scanner: bufio.NewScanner(load.GetBufferedReader(config.FileName))}
+	//return &fileDataSource{scanner: bufio.NewScanner(load.GetBufferedReader(config.FileName))}
+	return &fileDataSource{scanner: bufio.NewScanner(load.GetBufferedReader("/home/lsd/go_project/tsbs/data/influxdb-data"))}
 }
 
 func (b *benchmark) GetBatchFactory() targets.BatchFactory {
